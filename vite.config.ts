@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  base: './', // Ensures paths work correctly on GitHub Pages subfolders
+  base: '/Cook-Book/', // GitHub Pages repo name
   build: {
     outDir: 'dist',
     assetsDir: 'assets',

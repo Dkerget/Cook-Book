@@ -4,108 +4,16 @@ import { RecipeCard } from './components/RecipeCard.tsx';
 import { RecipeDetail } from './components/RecipeDetail.tsx';
 import { AddRecipeModal } from './components/AddRecipeModal.tsx';
 import { EditRecipeModal } from './components/EditRecipeModal.tsx';
+import { translations, INITIAL_RECIPES } from './constants.ts';
 
 const STORAGE_KEY = 'wellness_cookbook_data_v2';
 const LANG_KEY = 'wellness_cookbook_lang';
 
-export const translations = {
-  en: {
-    title: "Cookbook",
-    subtitle: "The Art of Mindful Nourishment",
-    search: "Filter your collection...",
-    addRecipe: "Add Recipe",
-    export: "Export",
-    import: "Import",
-    all: "All",
-    empty: "Your collection is currently empty.",
-    footerNote: "Patience • Presence • Plate",
-    curated: "Personal Recipe Collection",
-    Breakfast: "Breakfast",
-    Lunch: "Lunch",
-    Dinner: "Dinner",
-    Snack: "Snack",
-    Dessert: "Dessert",
-    viewSource: "View Source",
-    edit: "Edit",
-    copyLink: "Copy Link",
-    delete: "Delete",
-    ingredients: "Ingredients",
-    instructions: "Instructions",
-    newRecipe: "New Recipe",
-    editRecipe: "Edit Recipe",
-    recipeTitle: "Title",
-    category: "Category",
-    sourceUrl: "Source URL (Optional)",
-    uploadPhoto: "Upload Photo",
-    changePhoto: "Change Photo",
-    add: "+ Add",
-    addToCollection: "Add to Collection",
-    saveRecipe: "Save Recipe",
-    copied: "Source link copied to clipboard!",
-    placeholderTitle: "e.g. Heirloom Tomato Tart",
-    placeholderStep: "Describe step...",
-    placeholderIng: "e.g. 2 ripe avocados",
-    importSuccess: "Recipes imported successfully!",
-    importError: "Failed to import recipes."
-  },
-  ru: {
-    title: "Книга рецептов",
-    subtitle: "Искусство осознанного питания",
-    search: "Фильтр коллекции...",
-    addRecipe: "Добавить рецепт",
-    export: "Экспорт",
-    import: "Импорт",
-    all: "Все",
-    empty: "Ваша коллекция пока пуста.",
-    footerNote: "Терпение • Присутствие • Блюдо",
-    curated: "Личная коллекция рецептов",
-    Breakfast: "Завтрак",
-    Lunch: "Обед",
-    Dinner: "Ужин",
-    Snack: "Перекус",
-    Dessert: "Десерт",
-    viewSource: "Источник",
-    edit: "Правка",
-    copyLink: "Копировать",
-    delete: "Удалить",
-    ingredients: "Ингредиенты",
-    instructions: "Инструкции",
-    newRecipe: "Новый рецепт",
-    editRecipe: "Редактировать",
-    recipeTitle: "Название",
-    category: "Категория",
-    sourceUrl: "URL источника (опц.)",
-    uploadPhoto: "Загрузить фото",
-    changePhoto: "Изменить фото",
-    add: "+ Добавить",
-    addToCollection: "Добавить в коллекцию",
-    saveRecipe: "Сохранить",
-    copied: "Ссылка скопирована!",
-    placeholderTitle: "напр. Тарт с томатами",
-    placeholderStep: "Опишите шаг...",
-    placeholderIng: "напр. 2 спелых авокадо",
-    importSuccess: "Успешно импортировано!",
-    importError: "Ошибка импорта."
-  }
-};
-
-const INITIAL_RECIPES: Recipe[] = [
-  {
-    id: '1',
-    title: 'Whipped Matcha Bowl',
-    url: 'https://example.com/matcha',
-    category: Category.Breakfast,
-    ingredients: ['1 tsp ceremonial matcha', '1/2 cup hot water', '1 tbsp honey', 'Greek yogurt', 'Blackberries'],
-    instructions: ['Whisk matcha with water until frothy.', 'Layer yogurt in bowl.', 'Drizzle matcha over yogurt.', 'Top with berries.'],
-    thumbnail: 'https://images.unsplash.com/photo-1515823064-d6e0c04616a7?auto=format&fit=crop&w=800&q=80',
-    createdAt: Date.now()
-  }
-];
-
 const App: React.FC = () => {
   const [lang, setLang] = useState<'en' | 'ru'>(() => {
     try {
-      return (localStorage.getItem(LANG_KEY) as 'en' | 'ru') || 'en';
+      const saved = localStorage.getItem(LANG_KEY);
+      return (saved as 'en' | 'ru') || 'en';
     } catch { return 'en'; }
   });
 

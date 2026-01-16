@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Category, Recipe } from '../types.ts';
-import { translations } from '../App.tsx';
+import { translations } from '../constants.ts';
 
 interface EditRecipeModalProps {
   recipe: Recipe;
@@ -13,8 +13,8 @@ export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({ recipe, lang, 
   const t = translations[lang];
   const [formData, setFormData] = useState<Recipe>({ ...recipe });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (e?: React.SyntheticEvent) => {
+    e?.preventDefault();
     onSave({
       ...formData,
       ingredients: formData.ingredients.filter(i => i.trim()),
@@ -159,6 +159,7 @@ export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({ recipe, lang, 
 
         <div className="p-8 bg-white border-t border-[#e5e1d8] shrink-0 shadow-inner">
           <button 
+            type="button"
             onClick={handleSubmit}
             className="w-full py-5 px-8 bg-[#3f4238] text-[#f4f1ea] uppercase tracking-[0.3em] text-[11px] font-bold hover:bg-[#525547] transition-all shadow-xl active:scale-[0.98]"
           >

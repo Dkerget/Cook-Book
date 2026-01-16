@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Category, NewRecipeInput } from '../types.ts';
-import { translations } from '../App.tsx';
+import { translations } from '../constants.ts';
 
 interface AddRecipeModalProps {
   onClose: () => void;
@@ -15,8 +15,8 @@ export const AddRecipeModal: React.FC<AddRecipeModalProps> = ({ onClose, lang, o
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (e?: React.SyntheticEvent) => {
+    e?.preventDefault();
     if (formData.title.trim()) {
       onAdd({
         ...formData,
@@ -105,7 +105,7 @@ export const AddRecipeModal: React.FC<AddRecipeModalProps> = ({ onClose, lang, o
           </div>
         </form>
         <div className="p-8 bg-white border-t border-[#e5e1d8]">
-          <button onClick={handleSubmit} className="w-full py-5 bg-[#3f4238] text-white text-[11px] font-bold uppercase tracking-[0.3em] hover:bg-[#525547] transition-all shadow-xl active:scale-[0.98]">{t.addToCollection}</button>
+          <button type="button" onClick={handleSubmit} className="w-full py-5 bg-[#3f4238] text-white text-[11px] font-bold uppercase tracking-[0.3em] hover:bg-[#525547] transition-all shadow-xl active:scale-[0.98]">{t.addToCollection}</button>
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Recipe } from '../types.ts';
-import { translations } from '../App.tsx';
+import { translations } from '../constants.ts';
 
 interface RecipeDetailProps {
   recipe: Recipe;
