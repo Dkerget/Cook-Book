@@ -103,16 +103,29 @@ const INITIAL_RECIPES: Recipe[] = [
 ];
 
 const App: React.FC = () => {
-  const [lang, setLang] = useState<'en' | 'ru'>(() => (localStorage.getItem(LANG_KEY) as 'en' | 'ru') || 'en');
-  const [recipes, setRecipes] = useState<Recipe[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : INITIAL_RECIPES;
+  const [lang, setLang] = useState<'en' | 'ru'>(() => {
+    try {
+      return (localStorage.getItem(LANG_KEY) as 'en' | 'ru') || 'en';
+    } catch {
+      return 'en';
+    }
   });
+
+  const [recipes, setRecipes] = useState<Recipe[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? JSON.parse(saved) : INITIAL_RECIPES;
+    } catch {
+      return INITIAL_RECIPES;
+    }
+  });
+
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<Category | 'All'>('All');
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
   const t = translations[lang];
 
@@ -154,26 +167,42 @@ const App: React.FC = () => {
     <div className="min-h-screen pb-20">
       <div className="absolute top-6 right-6 z-50 flex items-center gap-6">
         <div className="flex gap-4 text-[9px] font-bold uppercase tracking-widest text-[#a5a58d]">
-          <button onClick={() => {
-            const blob = new Blob([JSON.stringify(recipes, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = 'recipes.json'; a.click();
-          }}>{t.export}</button>
-          <button onClick={() => fileInputRef.current?.click()}>{t.import}</button>
-          <input type="file" ref={fileInputRef} className="hidden" accept=".json" onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) {
-              const reader = new FileReader();
-              reader.onload = (ev) => {
-                try {
-                  const json = JSON.parse(ev.target?.result as string);
-                  if (Array.isArray(json)) setRecipes(json);
-                } catch { alert(t.importError); }
-              };
-              reader.readAsText(file);
-            }
-          }} />
+          <button 
+            className="hover:text-[#3f4238] transition-colors"
+            onClick={() => {
+              const blob = new Blob([JSON.stringify(recipes, null, 2)], { type: 'application/json' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url; a.download = 'wellness_recipes.json'; a.click();
+            }}
+          >
+            {t.export}
+          </button>
+          <button 
+            className="hover:text-[#3f4238] transition-colors"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {t.import}
+          </button>
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            className="hidden" 
+            accept=".json" 
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                  try {
+                    const json = JSON.parse(ev.target?.result as string);
+                    if (Array.isArray(json)) setRecipes(json);
+                  } catch { alert(t.importError); }
+                };
+                reader.readAsText(file);
+              }
+            }} 
+          />
         </div>
         <div className="flex gap-2 text-[10px] font-bold text-[#a5a58d]">
           <button onClick={() => setLang('en')} className={lang === 'en' ? 'text-[#3f4238]' : ''}>EN</button>
@@ -181,39 +210,91 @@ const App: React.FC = () => {
         </div>
       </div>
 
-      <header className="pt-16 pb-12 text-center border-b border-[#e5e1d8] mb-12">
-        <h1 className="serif text-7xl text-[#3f4238] mb-2">{t.title}</h1>
-        <p className="text-[10px] uppercase tracking-[0.4em] text-[#a5a58d]">{t.subtitle}</p>
+      <header className="pt-16 pb-12 text-center border-b border-[#e5e1d8] mb-12 px-4">
+        <h1 className="serif text-6xl md:text-8xl text-[#3f4238] mb-4">{t.title}</h1>
+        <p className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-[#a5a58d] font-bold">{t.subtitle}</p>
       </header>
 
       <div className="max-w-7xl mx-auto px-6 mb-12 flex flex-col md:flex-row gap-6 justify-between items-center">
-        <input 
-          type="text" placeholder={t.search} value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="bg-transparent border-b border-[#a5a58d] pb-2 text-[#3f4238] w-full md:max-w-xs focus:outline-none"
-        />
-        <div className="flex gap-2">
+        <div className="relative w-full md:max-w-xs">
+          <input 
+            type="text" 
+            placeholder={t.search} 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-transparent border-b border-[#a5a58d] pb-2 text-[#3f4238] focus:outline-none focus:border-[#3f4238] transition-colors"
+          />
+        </div>
+        <div className="flex flex-wrap justify-center gap-2">
           {['All', ...Object.values(Category)].map(cat => (
-            <button key={cat} onClick={() => setActiveCategory(cat as any)} className={`px-4 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest border ${activeCategory === cat ? 'bg-[#3f4238] text-white' : 'text-[#a5a58d]'}`}>
+            <button 
+              key={cat} 
+              onClick={() => setActiveCategory(cat as any)} 
+              className={`px-4 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-widest border transition-all ${
+                activeCategory === cat ? 'bg-[#3f4238] text-white border-[#3f4238]' : 'text-[#a5a58d] border-[#e5e1d8] hover:border-[#a5a58d]'
+              }`}
+            >
               {cat === 'All' ? t.all : t[cat as Category]}
             </button>
           ))}
         </div>
-        <button onClick={() => setIsAddModalOpen(true)} className="px-8 py-3 bg-[#3f4238] text-white text-[10px] uppercase font-bold tracking-widest rounded-sm">
+        <button 
+          onClick={() => setIsAddModalOpen(true)} 
+          className="px-8 py-3 bg-[#3f4238] text-white text-[10px] uppercase font-bold tracking-widest rounded-sm hover:bg-[#525547] transition-all"
+        >
           {t.addRecipe}
         </button>
       </div>
 
       <main className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
         {filteredRecipes.map(r => (
-          <RecipeCard key={r.id} recipe={r} lang={lang} onClick={setSelectedRecipe} onEdit={setEditingRecipe} onDelete={handleDeleteRecipe} />
+          <RecipeCard 
+            key={r.id} 
+            recipe={r} 
+            lang={lang} 
+            onClick={setSelectedRecipe} 
+            onEdit={setEditingRecipe} 
+            onDelete={handleDeleteRecipe} 
+          />
         ))}
+        {filteredRecipes.length === 0 && (
+          <div className="col-span-full py-20 text-center text-[#a5a58d] serif italic text-2xl opacity-50">
+            {t.empty}
+          </div>
+        )}
       </main>
 
-      {selectedRecipe && <RecipeDetail recipe={selectedRecipe} lang={lang} onClose={() => setSelectedRecipe(null)} onEdit={setEditingRecipe} onDelete={handleDeleteRecipe} />}
-      {isAddModalOpen && <AddRecipeModal lang={lang} onClose={() => setIsAddModalOpen(false)} onAdd={handleAddRecipe} />}
-      {editingRecipe && <EditRecipeModal recipe={editingRecipe} lang={lang} onClose={() => setEditingRecipe(null)} onSave={handleUpdateRecipe} />}
+      {selectedRecipe && (
+        <RecipeDetail 
+          recipe={selectedRecipe} 
+          lang={lang} 
+          onClose={() => setSelectedRecipe(null)} 
+          onEdit={setEditingRecipe} 
+          onDelete={handleDeleteRecipe} 
+        />
+      )}
+      {isAddModalOpen && (
+        <AddRecipeModal 
+          lang={lang} 
+          onClose={() => setIsAddModalOpen(false)} 
+          onAdd={handleAddRecipe} 
+        />
+      )}
+      {editingRecipe && (
+        <EditRecipeModal 
+          recipe={editingRecipe} 
+          lang={lang} 
+          onClose={() => setEditingRecipe(null)} 
+          onSave={handleUpdateRecipe} 
+        />
+      )}
+
+      <footer className="mt-20 pt-16 border-t border-[#e5e1d8] px-6 max-w-7xl mx-auto text-center opacity-40">
+        <div className="serif text-3xl text-[#3f4238] mb-2">{t.footerNote}</div>
+        <div className="text-[8px] uppercase tracking-[0.5em] text-[#a5a58d]">{t.curated}</div>
+      </footer>
     </div>
   );
 };
+
 export default App;
