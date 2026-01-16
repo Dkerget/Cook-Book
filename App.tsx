@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Category, Recipe, NewRecipeInput } from './types';
-import { RecipeCard } from './components/RecipeCard';
-import { RecipeDetail } from './components/RecipeDetail';
-import { AddRecipeModal } from './components/AddRecipeModal';
-import { EditRecipeModal } from './components/EditRecipeModal';
+import { Category, Recipe, NewRecipeInput } from './types.ts';
+import { RecipeCard } from './components/RecipeCard.tsx';
+import { RecipeDetail } from './components/RecipeDetail.tsx';
+import { AddRecipeModal } from './components/AddRecipeModal.tsx';
+import { EditRecipeModal } from './components/EditRecipeModal.tsx';
 
 const STORAGE_KEY = 'wellness_cookbook_data_v2';
 const LANG_KEY = 'wellness_cookbook_lang';
@@ -106,18 +106,14 @@ const App: React.FC = () => {
   const [lang, setLang] = useState<'en' | 'ru'>(() => {
     try {
       return (localStorage.getItem(LANG_KEY) as 'en' | 'ru') || 'en';
-    } catch {
-      return 'en';
-    }
+    } catch { return 'en'; }
   });
 
   const [recipes, setRecipes] = useState<Recipe[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       return saved ? JSON.parse(saved) : INITIAL_RECIPES;
-    } catch {
-      return INITIAL_RECIPES;
-    }
+    } catch { return INITIAL_RECIPES; }
   });
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -159,14 +155,16 @@ const App: React.FC = () => {
   };
 
   const handleDeleteRecipe = (id: string) => {
-    setRecipes(prev => prev.filter(r => r.id !== id));
-    if (selectedRecipe?.id === id) setSelectedRecipe(null);
+    if (window.confirm('Delete this recipe?')) {
+      setRecipes(prev => prev.filter(r => r.id !== id));
+      if (selectedRecipe?.id === id) setSelectedRecipe(null);
+    }
   };
 
   return (
-    <div className="min-h-screen pb-20">
-      <div className="absolute top-6 right-6 z-50 flex items-center gap-6">
-        <div className="flex gap-4 text-[9px] font-bold uppercase tracking-widest text-[#a5a58d]">
+    <div className="min-h-screen pb-20 selection:bg-[#3f4238] selection:text-white">
+      <div className="fixed top-6 right-6 z-50 flex items-center gap-6">
+        <div className="flex gap-4 text-[9px] font-bold uppercase tracking-widest text-[#a5a58d] bg-[#f4f1ea]/80 backdrop-blur-sm p-2 rounded-sm border border-[#e5e1d8]">
           <button 
             className="hover:text-[#3f4238] transition-colors"
             onClick={() => {
@@ -204,34 +202,35 @@ const App: React.FC = () => {
             }} 
           />
         </div>
-        <div className="flex gap-2 text-[10px] font-bold text-[#a5a58d]">
+        <div className="flex gap-2 text-[10px] font-bold text-[#a5a58d] bg-[#f4f1ea]/80 backdrop-blur-sm p-2 rounded-sm border border-[#e5e1d8]">
           <button onClick={() => setLang('en')} className={lang === 'en' ? 'text-[#3f4238]' : ''}>EN</button>
+          <span className="opacity-20">|</span>
           <button onClick={() => setLang('ru')} className={lang === 'ru' ? 'text-[#3f4238]' : ''}>RU</button>
         </div>
       </div>
 
-      <header className="pt-16 pb-12 text-center border-b border-[#e5e1d8] mb-12 px-4">
-        <h1 className="serif text-6xl md:text-8xl text-[#3f4238] mb-4">{t.title}</h1>
-        <p className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-[#a5a58d] font-bold">{t.subtitle}</p>
+      <header className="pt-24 pb-16 text-center border-b border-[#e5e1d8] mb-12 px-4 bg-white/30">
+        <h1 className="serif text-7xl md:text-9xl text-[#3f4238] mb-6 tracking-tight">{t.title}</h1>
+        <p className="text-[11px] md:text-sm uppercase tracking-[0.5em] text-[#a5a58d] font-bold">{t.subtitle}</p>
       </header>
 
-      <div className="max-w-7xl mx-auto px-6 mb-12 flex flex-col md:flex-row gap-6 justify-between items-center">
+      <div className="max-w-7xl mx-auto px-6 mb-16 flex flex-col md:flex-row gap-8 justify-between items-center">
         <div className="relative w-full md:max-w-xs">
           <input 
             type="text" 
             placeholder={t.search} 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-transparent border-b border-[#a5a58d] pb-2 text-[#3f4238] focus:outline-none focus:border-[#3f4238] transition-colors"
+            className="w-full bg-transparent border-b border-[#a5a58d] pb-3 text-[#3f4238] focus:outline-none focus:border-[#3f4238] transition-all placeholder:opacity-50"
           />
         </div>
-        <div className="flex flex-wrap justify-center gap-2">
+        <div className="flex flex-wrap justify-center gap-3">
           {['All', ...Object.values(Category)].map(cat => (
             <button 
               key={cat} 
               onClick={() => setActiveCategory(cat as any)} 
-              className={`px-4 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-widest border transition-all ${
-                activeCategory === cat ? 'bg-[#3f4238] text-white border-[#3f4238]' : 'text-[#a5a58d] border-[#e5e1d8] hover:border-[#a5a58d]'
+              className={`px-5 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border transition-all duration-300 ${
+                activeCategory === cat ? 'bg-[#3f4238] text-white border-[#3f4238] shadow-md' : 'text-[#a5a58d] border-[#e5e1d8] hover:border-[#a5a58d]'
               }`}
             >
               {cat === 'All' ? t.all : t[cat as Category]}
@@ -240,13 +239,13 @@ const App: React.FC = () => {
         </div>
         <button 
           onClick={() => setIsAddModalOpen(true)} 
-          className="px-8 py-3 bg-[#3f4238] text-white text-[10px] uppercase font-bold tracking-widest rounded-sm hover:bg-[#525547] transition-all"
+          className="px-10 py-4 bg-[#3f4238] text-white text-[11px] uppercase font-bold tracking-[0.2em] rounded-sm hover:bg-[#525547] transition-all shadow-lg active:scale-95"
         >
           {t.addRecipe}
         </button>
       </div>
 
-      <main className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+      <main className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
         {filteredRecipes.map(r => (
           <RecipeCard 
             key={r.id} 
@@ -258,7 +257,7 @@ const App: React.FC = () => {
           />
         ))}
         {filteredRecipes.length === 0 && (
-          <div className="col-span-full py-20 text-center text-[#a5a58d] serif italic text-2xl opacity-50">
+          <div className="col-span-full py-32 text-center text-[#a5a58d] serif italic text-3xl opacity-40">
             {t.empty}
           </div>
         )}
@@ -289,9 +288,9 @@ const App: React.FC = () => {
         />
       )}
 
-      <footer className="mt-20 pt-16 border-t border-[#e5e1d8] px-6 max-w-7xl mx-auto text-center opacity-40">
-        <div className="serif text-3xl text-[#3f4238] mb-2">{t.footerNote}</div>
-        <div className="text-[8px] uppercase tracking-[0.5em] text-[#a5a58d]">{t.curated}</div>
+      <footer className="mt-32 pt-20 border-t border-[#e5e1d8] px-6 max-w-7xl mx-auto text-center opacity-40 pb-20">
+        <div className="serif text-4xl text-[#3f4238] mb-4 tracking-wide">{t.footerNote}</div>
+        <div className="text-[9px] uppercase tracking-[0.6em] text-[#a5a58d] font-bold">{t.curated}</div>
       </footer>
     </div>
   );
