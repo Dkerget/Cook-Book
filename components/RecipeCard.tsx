@@ -15,25 +15,30 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, lang, onClick, o
 
   return (
     <div 
-      className="group relative bg-white border border-[#e5e1d8] rounded-sm overflow-hidden transition-all duration-500 hover:shadow-2xl cursor-pointer flex flex-col h-full"
+      className="group relative clay-surface overflow-hidden transition-all duration-500 hover:-translate-y-2 cursor-pointer flex flex-col h-full"
       onClick={() => onClick(recipe)}
     >
-      <div className="aspect-[4/3] overflow-hidden relative">
+      <div className="p-4">
+        <div className="aspect-[4/3] overflow-hidden relative clay-inset">
         <img 
           src={recipe.thumbnail} 
           alt={recipe.title} 
-          className="w-full h-full object-cover grayscale-[0.1] transition-transform duration-1000 group-hover:scale-105"
+          className="w-full h-full object-cover grayscale-[0.1] transition-transform duration-1000 group-hover:scale-110 rounded-[16px]"
         />
-        <div className="absolute inset-0 bg-[#3f4238]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <div className="absolute inset-0 bg-[#3f4238]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        </div>
       </div>
       
-      <div className="p-5 bg-white flex-1 flex flex-col justify-center text-center">
-        <span className="text-[9px] uppercase tracking-[0.3em] text-[#a5a58d] font-bold mb-2 block">
+      <div className="px-6 pb-8 flex-1 flex flex-col justify-center text-center">
+        <span className="text-[9px] uppercase tracking-[0.35em] text-[#a5a58d] font-bold mb-3 block">
           {t[recipe.category]}
         </span>
         <h3 className="serif text-2xl text-[#3f4238] font-medium leading-tight px-2">
           {recipe.title}
         </h3>
+        <div className="mt-5 flex justify-center">
+          <span className="clay-chip px-4 py-1 text-[9px] uppercase tracking-[0.4em] text-[#a5a58d] font-semibold">Clay Card</span>
+        </div>
       </div>
 
       <div className="absolute top-4 right-4 flex flex-col gap-2 z-20 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300">
@@ -44,7 +49,7 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, lang, onClick, o
             e.stopPropagation();
             onEdit(recipe);
           }}
-          className="p-3 bg-white/95 backdrop-blur-md rounded-full shadow-lg hover:bg-[#3f4238] hover:text-white text-[#a5a58d] transition-all active:scale-90"
+          className="p-3 bg-white/90 backdrop-blur-md rounded-full shadow-lg hover:bg-[#3f4238] hover:text-white text-[#a5a58d] transition-all active:scale-90"
           title={t.edit}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -58,7 +63,7 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, lang, onClick, o
             e.stopPropagation();
             onDelete(recipe.id);
           }}
-          className="p-3 bg-white/95 backdrop-blur-md rounded-full shadow-lg hover:bg-red-500 hover:text-white text-red-300 transition-all active:scale-90"
+          className="p-3 bg-white/90 backdrop-blur-md rounded-full shadow-lg hover:bg-red-500 hover:text-white text-red-300 transition-all active:scale-90"
           title={t.delete}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

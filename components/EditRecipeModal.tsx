@@ -42,14 +42,14 @@ export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({ recipe, lang, 
   };
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-start md:items-center justify-center p-4 bg-[#3f4238]/80 backdrop-blur-md overflow-hidden">
-      <div className="bg-[#f4f1ea] w-full max-w-3xl h-auto max-h-[95dvh] flex flex-col rounded-sm shadow-2xl border border-[#e5e1d8] animate-in fade-in zoom-in duration-300">
+    <div className="fixed inset-0 z-[70] flex items-start md:items-center justify-center p-4 bg-[#3f4238]/70 backdrop-blur-md overflow-hidden">
+      <div className="clay-surface w-full max-w-3xl h-auto max-h-[95dvh] flex flex-col animate-in fade-in zoom-in duration-300">
         
-        <div className="flex justify-between items-center p-6 md:p-8 border-b border-[#e5e1d8] bg-white shrink-0">
+        <div className="flex justify-between items-center p-6 md:p-8 shrink-0">
           <h2 className="serif text-3xl text-[#3f4238]">{t.editRecipe}</h2>
           <button 
             onClick={onClose} 
-            className="p-2 text-[#a5a58d] hover:text-[#3f4238] transition-colors rounded-full hover:bg-[#f4f1ea]"
+            className="clay-chip text-[#a5a58d] hover:text-[#3f4238] transition-colors px-3 py-2"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -57,7 +57,7 @@ export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({ recipe, lang, 
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-8 md:p-12 space-y-10 custom-scrollbar">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-8 pb-10 md:px-12 md:pb-12 space-y-10 custom-scrollbar">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
               <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#a5a58d] mb-2">{t.recipeTitle}</label>
@@ -66,7 +66,7 @@ export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({ recipe, lang, 
                 type="text" 
                 value={formData.title}
                 onChange={(e) => setFormData({...formData, title: e.target.value})}
-                className="w-full bg-white border border-[#e5e1d8] p-4 text-sm focus:outline-none focus:border-[#a5a58d] transition-all"
+                className="w-full clay-inset p-4 text-sm focus:outline-none transition-all"
               />
             </div>
             <div>
@@ -75,7 +75,7 @@ export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({ recipe, lang, 
                 <select 
                   value={formData.category}
                   onChange={(e) => setFormData({...formData, category: e.target.value as Category})}
-                  className="w-full bg-white border border-[#e5e1d8] p-4 text-sm focus:outline-none focus:border-[#a5a58d] appearance-none"
+                  className="w-full clay-inset p-4 text-sm focus:outline-none appearance-none"
                 >
                   {Object.values(Category).map(cat => (
                     <option key={cat} value={cat}>{t[cat]}</option>
@@ -89,24 +89,24 @@ export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({ recipe, lang, 
           </div>
 
           <div>
-            <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#a5a58d] mb-5 flex justify-between items-center border-b border-[#e5e1d8] pb-2">
+            <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#a5a58d] mb-5 flex justify-between items-center pb-2">
               <span>{t.ingredients}</span>
               <button 
                 type="button" 
                 onClick={() => addListItem('ingredients')} 
-                className="text-[9px] bg-[#3f4238] text-white px-4 py-1.5 rounded-sm hover:bg-[#525547] transition-all shadow-sm"
+                className="text-[9px] clay-press text-white px-4 py-1.5 transition-all"
               >
                 {t.add}
               </button>
             </label>
-            <div className="space-y-3">
+            <div className="space-y-3 clay-inset px-4 py-4">
               {formData.ingredients.map((ing, i) => (
                 <div key={i} className="flex gap-3 items-center group">
                   <input 
                     type="text" 
                     value={ing}
                     onChange={(e) => handleListChange('ingredients', i, e.target.value)}
-                    className="flex-1 bg-white border border-[#e5e1d8] p-3 text-sm focus:border-[#a5a58d] outline-none transition-all"
+                    className="flex-1 clay-inset p-3 text-sm outline-none transition-all"
                   />
                   <button 
                     type="button" 
@@ -123,24 +123,24 @@ export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({ recipe, lang, 
           </div>
 
           <div>
-            <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#a5a58d] mb-5 flex justify-between items-center border-b border-[#e5e1d8] pb-2">
+            <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#a5a58d] mb-5 flex justify-between items-center pb-2">
               <span>{t.instructions}</span>
               <button 
                 type="button" 
                 onClick={() => addListItem('instructions')} 
-                className="text-[9px] bg-[#3f4238] text-white px-4 py-1.5 rounded-sm hover:bg-[#525547] transition-all shadow-sm"
+                className="text-[9px] clay-press text-white px-4 py-1.5 transition-all"
               >
                 {t.add}
               </button>
             </label>
-            <div className="space-y-6">
+            <div className="space-y-6 clay-inset px-4 py-4">
               {formData.instructions.map((step, i) => (
                 <div key={i} className="flex gap-4 items-start group">
                   <span className="serif text-xl text-[#a5a58d] pt-3 w-6 shrink-0 italic opacity-50">{i + 1}</span>
                   <textarea 
                     value={step}
                     onChange={(e) => handleListChange('instructions', i, e.target.value)}
-                    className="flex-1 bg-white border border-[#e5e1d8] p-4 text-sm min-h-[100px] focus:border-[#a5a58d] outline-none transition-all"
+                    className="flex-1 clay-inset p-4 text-sm min-h-[100px] outline-none transition-all"
                   />
                   <button 
                     type="button" 
@@ -157,11 +157,11 @@ export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({ recipe, lang, 
           </div>
         </form>
 
-        <div className="p-8 bg-white border-t border-[#e5e1d8] shrink-0 shadow-inner">
+        <div className="p-8 shrink-0">
           <button 
             type="button"
             onClick={handleSubmit}
-            className="w-full py-5 px-8 bg-[#3f4238] text-[#f4f1ea] uppercase tracking-[0.3em] text-[11px] font-bold hover:bg-[#525547] transition-all shadow-xl active:scale-[0.98]"
+            className="w-full py-5 px-8 text-[#f4f1ea] uppercase tracking-[0.3em] text-[11px] font-bold clay-press hover:brightness-110 transition-all active:scale-[0.98]"
           >
             {t.saveRecipe}
           </button>

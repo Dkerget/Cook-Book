@@ -32,6 +32,9 @@ const App: React.FC = () => {
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const t = translations[lang];
+  const titleWords = t.title.split(' ');
+  const lastWord = titleWords.length > 1 ? titleWords.pop() : titleWords[0];
+  const firstWords = titleWords.join(' ');
 
   useEffect(() => { localStorage.setItem(LANG_KEY, lang); }, [lang]);
   useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(recipes)); }, [recipes]);
@@ -70,9 +73,15 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen pb-20 selection:bg-[#3f4238] selection:text-white">
+    <div className="relative min-h-screen pb-20 selection:bg-[#3f4238] selection:text-white">
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="clay-float absolute -top-32 -left-16 h-72 w-72 rounded-[48px] bg-white/50 blur-2xl"></div>
+        <div className="clay-float-slow absolute top-24 right-10 h-96 w-96 rounded-full bg-[#e8e2d8]/80 blur-3xl"></div>
+        <div className="absolute bottom-0 left-1/3 h-80 w-80 rounded-[64px] bg-white/40 blur-2xl"></div>
+      </div>
+
       <div className="fixed top-6 right-6 z-50 flex items-center gap-6">
-        <div className="flex gap-4 text-[9px] font-bold uppercase tracking-widest text-[#a5a58d] bg-[#f4f1ea]/80 backdrop-blur-sm p-2 rounded-sm border border-[#e5e1d8]">
+        <div className="clay-chip flex gap-4 text-[9px] font-bold uppercase tracking-widest text-[#a5a58d] px-4 py-2">
           <button 
             className="hover:text-[#3f4238] transition-colors"
             onClick={() => {
@@ -110,26 +119,42 @@ const App: React.FC = () => {
             }} 
           />
         </div>
-        <div className="flex gap-2 text-[10px] font-bold text-[#a5a58d] bg-[#f4f1ea]/80 backdrop-blur-sm p-2 rounded-sm border border-[#e5e1d8]">
+        <div className="clay-chip flex gap-2 text-[10px] font-bold text-[#a5a58d] px-4 py-2">
           <button onClick={() => setLang('en')} className={lang === 'en' ? 'text-[#3f4238]' : ''}>EN</button>
           <span className="opacity-20">|</span>
           <button onClick={() => setLang('ru')} className={lang === 'ru' ? 'text-[#3f4238]' : ''}>RU</button>
         </div>
       </div>
 
-      <header className="pt-24 pb-16 text-center border-b border-[#e5e1d8] mb-12 px-4 bg-white/30">
-        <h1 className="serif text-7xl md:text-9xl text-[#3f4238] mb-6 tracking-tight">{t.title}</h1>
-        <p className="text-[11px] md:text-sm uppercase tracking-[0.5em] text-[#a5a58d] font-bold">{t.subtitle}</p>
+      <header className="pt-28 pb-16 text-center mb-10 px-4">
+        <div className="mx-auto max-w-3xl clay-surface px-6 md:px-10 py-10 md:py-14">
+          <p className="text-[10px] md:text-xs uppercase tracking-[0.6em] text-[#a5a58d] font-bold mb-6">
+            {t.subtitle}
+          </p>
+          <h1 className="serif text-5xl md:text-7xl lg:text-8xl text-[#3f4238] tracking-tight">
+            <span className="block">{firstWords || lastWord}</span>
+            {firstWords && (
+              <span className="block text-2xl md:text-4xl lg:text-5xl uppercase tracking-[0.6em] text-[#a5a58d] mt-4">
+                {lastWord}
+              </span>
+            )}
+          </h1>
+          <div className="mt-8 flex flex-wrap justify-center gap-3 text-[10px] uppercase tracking-[0.35em] text-[#a5a58d] font-semibold">
+            <span className="clay-chip px-4 py-2">Soft Clay</span>
+            <span className="clay-chip px-4 py-2">Neumorphic</span>
+            <span className="clay-chip px-4 py-2">Kitchen Rituals</span>
+          </div>
+        </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-6 mb-16 flex flex-col md:flex-row gap-8 justify-between items-center">
-        <div className="relative w-full md:max-w-xs">
+      <div className="max-w-7xl mx-auto px-6 mb-14 flex flex-col md:flex-row gap-8 justify-between items-center">
+        <div className="relative w-full md:max-w-xs clay-inset px-5 py-4">
           <input 
             type="text" 
             placeholder={t.search} 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-transparent border-b border-[#a5a58d] pb-3 text-[#3f4238] focus:outline-none focus:border-[#3f4238] transition-all placeholder:opacity-50"
+            className="w-full bg-transparent text-[#3f4238] focus:outline-none placeholder:opacity-50 text-sm tracking-wide"
           />
         </div>
         <div className="flex flex-wrap justify-center gap-3">
@@ -137,8 +162,8 @@ const App: React.FC = () => {
             <button 
               key={cat} 
               onClick={() => setActiveCategory(cat as any)} 
-              className={`px-5 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border transition-all duration-300 ${
-                activeCategory === cat ? 'bg-[#3f4238] text-white border-[#3f4238] shadow-md' : 'text-[#a5a58d] border-[#e5e1d8] hover:border-[#a5a58d]'
+              className={`px-5 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-300 clay-chip ${
+                activeCategory === cat ? 'bg-[#3f4238] text-white border-[#3f4238]' : 'text-[#a5a58d] hover:text-[#3f4238]'
               }`}
             >
               {cat === 'All' ? t.all : t[cat as Category]}
@@ -147,7 +172,7 @@ const App: React.FC = () => {
         </div>
         <button 
           onClick={() => setIsAddModalOpen(true)} 
-          className="px-10 py-4 bg-[#3f4238] text-white text-[11px] uppercase font-bold tracking-[0.2em] rounded-sm hover:bg-[#525547] transition-all shadow-lg active:scale-95"
+          className="px-10 py-4 text-white text-[11px] uppercase font-bold tracking-[0.25em] clay-press hover:brightness-110 transition-all active:scale-95"
         >
           {t.addRecipe}
         </button>
@@ -196,9 +221,11 @@ const App: React.FC = () => {
         />
       )}
 
-      <footer className="mt-32 pt-20 border-t border-[#e5e1d8] px-6 max-w-7xl mx-auto text-center opacity-40 pb-20">
-        <div className="serif text-4xl text-[#3f4238] mb-4 tracking-wide">{t.footerNote}</div>
-        <div className="text-[9px] uppercase tracking-[0.6em] text-[#a5a58d] font-bold">{t.curated}</div>
+      <footer className="mt-32 pt-20 px-6 max-w-7xl mx-auto text-center pb-20">
+        <div className="clay-surface inline-flex flex-col items-center px-10 py-8">
+          <div className="serif text-3xl md:text-4xl text-[#3f4238] mb-4 tracking-wide">{t.footerNote}</div>
+          <div className="text-[9px] uppercase tracking-[0.6em] text-[#a5a58d] font-bold">{t.curated}</div>
+        </div>
       </footer>
     </div>
   );

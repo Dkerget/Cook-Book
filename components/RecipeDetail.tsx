@@ -23,12 +23,12 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, lang, onClos
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start md:items-center justify-center p-4 md:p-8 bg-[#f4f1ea]/90 backdrop-blur-xl overflow-y-auto">
-      <div className="bg-white w-full max-w-6xl h-auto md:max-h-[90dvh] shadow-2xl relative rounded-sm flex flex-col md:flex-row overflow-hidden border border-[#e5e1d8] animate-in fade-in zoom-in duration-500">
+    <div className="fixed inset-0 z-50 flex items-start md:items-center justify-center p-4 md:p-8 bg-[#efe9e0]/85 backdrop-blur-xl overflow-y-auto">
+      <div className="clay-surface w-full max-w-6xl h-auto md:max-h-[90dvh] relative flex flex-col md:flex-row overflow-hidden animate-in fade-in zoom-in duration-500">
         
         <button 
           onClick={onClose}
-          className="absolute top-6 right-6 z-20 p-3 bg-white/90 backdrop-blur-md rounded-full hover:bg-white shadow-lg transition-all active:scale-90 border border-[#e5e1d8]"
+          className="absolute top-6 right-6 z-20 p-3 clay-chip hover:brightness-110 transition-all active:scale-90"
           aria-label="Close"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#3f4238]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -36,16 +36,18 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, lang, onClos
           </svg>
         </button>
 
-        <div className="w-full md:w-[45%] h-72 md:h-auto relative overflow-hidden bg-[#f4f1ea] shrink-0 border-r border-[#f4f1ea]">
-          <img 
-            src={recipe.thumbnail} 
-            alt={recipe.title} 
-            className="w-full h-full object-cover scale-105"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#3f4238]/20 via-transparent to-transparent"></div>
+        <div className="w-full md:w-[45%] h-72 md:h-auto relative overflow-hidden shrink-0 p-6">
+          <div className="clay-inset relative h-full w-full overflow-hidden">
+            <img 
+              src={recipe.thumbnail} 
+              alt={recipe.title} 
+              className="w-full h-full object-cover scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#3f4238]/20 via-transparent to-transparent"></div>
+          </div>
         </div>
 
-        <div className="w-full md:w-[55%] p-8 md:p-14 lg:p-20 overflow-y-auto custom-scrollbar flex flex-col bg-white">
+        <div className="w-full md:w-[55%] p-8 md:p-14 lg:p-20 overflow-y-auto custom-scrollbar flex flex-col bg-transparent">
           <div className="max-w-xl mx-auto w-full">
             <span className="text-[10px] uppercase tracking-[0.5em] text-[#a5a58d] font-bold mb-5 block">
               {t[recipe.category]}
@@ -54,7 +56,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, lang, onClos
               {recipe.title}
             </h2>
 
-            <div className="flex flex-wrap gap-x-8 gap-y-4 mb-12 border-b border-[#f4f1ea] pb-8">
+            <div className="flex flex-wrap gap-x-8 gap-y-4 mb-12 clay-inset px-6 py-4">
               {recipe.url && (
                 <a 
                   href={recipe.url} 
@@ -90,8 +92,8 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, lang, onClos
             </div>
 
             <section className="mb-12">
-              <h4 className="serif text-3xl mb-6 text-[#3f4238] font-semibold italic border-l-4 border-[#a5a58d] pl-6 tracking-wide">{t.ingredients}</h4>
-              <ul className="space-y-4">
+              <h4 className="serif text-3xl mb-6 text-[#3f4238] font-semibold italic tracking-wide">{t.ingredients}</h4>
+              <ul className="space-y-4 clay-inset px-6 py-6">
                 {recipe.ingredients.map((ing, i) => (
                   <li key={i} className="flex items-start gap-4 text-base text-[#6b705c] leading-relaxed">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#a5a58d] mt-2.5 shrink-0 opacity-60"></span>
@@ -102,8 +104,8 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, lang, onClos
             </section>
 
             <section className="mb-12">
-              <h4 className="serif text-3xl mb-8 text-[#3f4238] font-semibold italic border-l-4 border-[#a5a58d] pl-6 tracking-wide">{t.instructions}</h4>
-              <ol className="space-y-8">
+              <h4 className="serif text-3xl mb-8 text-[#3f4238] font-semibold italic tracking-wide">{t.instructions}</h4>
+              <ol className="space-y-8 clay-inset px-6 py-8">
                 {recipe.instructions.map((step, i) => (
                   <li key={i} className="flex gap-8 group">
                     <span className="serif text-3xl text-[#a5a58d] font-light italic leading-none shrink-0 w-8 opacity-40 group-hover:opacity-100 transition-opacity">
