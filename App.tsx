@@ -45,6 +45,43 @@ const App: React.FC = () => {
     return result.sort((a, b) => b.createdAt - a.createdAt);
   }, [recipes, activeCategory, searchQuery]);
 
+  const categoryIcons: Record<string, JSX.Element> = {
+    All: (
+      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M6 12h12M8 18h8" />
+      </svg>
+    ),
+    Breakfast: (
+      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M7 4h10l-1 10H8L7 4z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 20h12" />
+      </svg>
+    ),
+    Lunch: (
+      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4 7h16M4 12h16M4 17h10" />
+      </svg>
+    ),
+    Dinner: (
+      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+        <circle cx="12" cy="12" r="4" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m13.66-6.66-1.4 1.4M6.74 17.26l-1.4 1.4m0-12 1.4 1.4m9.92 9.92 1.4 1.4" />
+      </svg>
+    ),
+    Snack: (
+      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 5h12v12H6z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8 9h8M8 13h6" />
+      </svg>
+    ),
+    Dessert: (
+      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4 10h16l-2 8H6l-2-8z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8 10a4 4 0 018 0" />
+      </svg>
+    )
+  };
+
   const handleAddRecipe = (input: NewRecipeInput) => {
     const newRecipe: Recipe = {
       ...input,
@@ -78,7 +115,7 @@ const App: React.FC = () => {
       </div>
 
       <div className="fixed top-6 right-6 z-50 flex items-center gap-6">
-        <div className="clay-chip flex gap-4 text-[9px] font-bold uppercase tracking-widest text-[#a5a58d] px-4 py-2">
+        <div className="clay-chip flex gap-4 text-[9px] font-bold uppercase tracking-widest text-[#8c9078] px-4 py-2">
           <button 
             className="hover:text-[#3f4238] transition-colors"
             onClick={() => {
@@ -116,7 +153,7 @@ const App: React.FC = () => {
             }} 
           />
         </div>
-        <div className="clay-chip flex gap-2 text-[10px] font-bold text-[#a5a58d] px-4 py-2">
+        <div className="clay-chip flex gap-2 text-[10px] font-bold text-[#8c9078] px-4 py-2">
           <button onClick={() => setLang('en')} className={lang === 'en' ? 'text-[#3f4238]' : ''}>EN</button>
           <span className="opacity-20">|</span>
           <button onClick={() => setLang('ru')} className={lang === 'ru' ? 'text-[#3f4238]' : ''}>RU</button>
@@ -149,11 +186,12 @@ const App: React.FC = () => {
             <button 
               key={cat} 
               onClick={() => setActiveCategory(cat as any)} 
-              className={`px-5 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-300 clay-chip ${
-                activeCategory === cat ? 'bg-[#3f4238] text-white border-[#3f4238]' : 'text-[#a5a58d] hover:text-[#3f4238]'
+              className={`px-5 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-300 clay-chip flex items-center gap-2 ${
+                activeCategory === cat ? 'bg-[#3f4238] text-white border-[#3f4238]' : 'text-[#5a5d50] hover:text-[#3f4238]'
               }`}
             >
-              {cat === 'All' ? t.all : t[cat as Category]}
+              <span className="opacity-80">{categoryIcons[cat]}</span>
+              <span>{cat === 'All' ? t.all : t[cat as Category]}</span>
             </button>
           ))}
         </div>
@@ -183,13 +221,14 @@ const App: React.FC = () => {
         )}
       </main>
 
-      {selectedRecipe && (
+        {selectedRecipe && (
         <RecipeDetail 
           recipe={selectedRecipe} 
           lang={lang} 
           onClose={() => setSelectedRecipe(null)} 
           onEdit={setEditingRecipe} 
           onDelete={handleDeleteRecipe} 
+          onUpdate={handleUpdateRecipe}
         />
       )}
       {isAddModalOpen && (
