@@ -123,18 +123,18 @@ const App: React.FC = () => {
         </div>
       </div>
 
-      <header className="pt-28 pb-16 text-center mb-10 px-4">
-        <div className="mx-auto max-w-3xl clay-surface px-6 md:px-10 py-10 md:py-14">
-          <h1 className="serif text-4xl md:text-5xl lg:text-6xl text-[#3f4238] tracking-tight">
+      <header className="pt-14 md:pt-16 pb-8 text-center mb-6 px-4">
+        <div className="mx-auto max-w-3xl clay-surface px-5 md:px-8 py-6 md:py-8">
+          <h1 className="serif text-2xl md:text-3xl lg:text-4xl text-[#3f4238] tracking-tight">
             {t.title}
           </h1>
-          <p className="mt-6 text-[10px] md:text-xs uppercase tracking-[0.6em] text-[#a5a58d] font-bold">
+          <p className="mt-3 text-[9px] md:text-[10px] uppercase tracking-[0.55em] text-[#a5a58d] font-bold">
             {t.subtitle}
           </p>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-6 mb-14 flex flex-col md:flex-row gap-8 justify-between items-center">
+      <div className="max-w-7xl mx-auto px-6 mb-10 flex flex-col md:flex-row gap-6 justify-between items-center">
         <div className="relative w-full md:max-w-xs clay-inset px-5 py-4">
           <input 
             type="text" 
