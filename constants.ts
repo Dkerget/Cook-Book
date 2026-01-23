@@ -2,7 +2,7 @@ import { Category, Recipe } from './types.ts';
 
 export const translations = {
   en: {
-    title: "Wellness Cookbook",
+    title: "Cookbook",
     subtitle: "The Art of Mindful Nourishment",
     search: "Filter your collection...",
     addRecipe: "Add Recipe",
