@@ -1,4 +1,10 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { User } from "firebase/auth";
+import {
+  sendLoginLink,
+  completeLoginIfLink,
+  watchAuth,
+} from "./src/auth/emailLink";
 import { Category, Recipe, NewRecipeInput } from './types.ts';
 import { RecipeCard } from './components/RecipeCard.tsx';
 import { RecipeDetail } from './components/RecipeDetail.tsx';
@@ -10,6 +16,59 @@ const STORAGE_KEY = 'wellness_cookbook_data_v2';
 const LANG_KEY = 'wellness_cookbook_lang';
 
 const App: React.FC = () => {
+  const [user, setUser] = useState<User | null>(null);
+  const [loginEmail, setLoginEmail] = useState("");
+  const [linkSent, setLinkSent] = useState(false);
+  useEffect(() => {
+    completeLoginIfLink();
+    return watchAuth(setUser);
+  }, []);
+  if (!user) {
+    return (
+      <div style={{ padding: 24, maxWidth: 420 }}>
+        <h2>Sign in to Cookbook</h2>
+
+        <input
+          type="email"
+          placeholder="your@email.com"
+          value={loginEmail}
+          onChange={(e) => setLoginEmail(e.target.value)}
+          style={{
+            width: "100%",
+            padding: 12,
+            fontSize: 16,
+            background: "#ededed",
+            border: "1px solid #d2d2d2",
+            color: "#3f4238",
+            borderRadius: 12
+          }}
+        />
+
+        <button
+          style={{
+            marginTop: 14,
+            padding: 12,
+            width: "100%",
+            background: "#3f4238",
+            color: "#f5f5f5",
+            border: "1px solid #2f312b",
+            borderRadius: 999,
+            fontWeight: 600,
+            letterSpacing: "0.08em"
+          }}
+          onClick={async () => {
+            await sendLoginLink(loginEmail);
+            setLinkSent(true);
+          }}
+        >
+          Send login link
+        </button>
+
+        {linkSent && <p>Check your email to finish signing in.</p>}
+      </div>
+    );
+  }
+
   const [lang, setLang] = useState<'en' | 'ru'>(() => {
     try {
       const saved = localStorage.getItem(LANG_KEY);
@@ -29,7 +88,7 @@ const App: React.FC = () => {
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const t = translations[lang];
 
@@ -45,7 +104,7 @@ const App: React.FC = () => {
     return result.sort((a, b) => b.createdAt - a.createdAt);
   }, [recipes, activeCategory, searchQuery]);
 
-  const categoryIcons: Record<string, JSX.Element> = {
+  const categoryIcons: Record<string, React.ReactNode> = {
     All: (
       <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M6 12h12M8 18h8" />
@@ -116,7 +175,7 @@ const App: React.FC = () => {
 
       <div className="fixed top-6 right-6 z-50 flex items-center gap-6">
         <div className="clay-chip flex gap-4 text-[9px] font-bold uppercase tracking-widest text-[#8c9078] px-4 py-2">
-          <button 
+          <button
             className="hover:text-[#3f4238] transition-colors"
             onClick={() => {
               const blob = new Blob([JSON.stringify(recipes, null, 2)], { type: 'application/json' });
@@ -127,17 +186,17 @@ const App: React.FC = () => {
           >
             {t.export}
           </button>
-          <button 
+          <button
             className="hover:text-[#3f4238] transition-colors"
             onClick={() => fileInputRef.current?.click()}
           >
             {t.import}
           </button>
-          <input 
-            type="file" 
-            ref={fileInputRef} 
-            className="hidden" 
-            accept=".json" 
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
+            accept=".json"
             onChange={(e) => {
               const file = e.target.files?.[0];
               if (file) {
@@ -150,7 +209,7 @@ const App: React.FC = () => {
                 };
                 reader.readAsText(file);
               }
-            }} 
+            }}
           />
         </div>
         <div className="clay-chip flex gap-2 text-[10px] font-bold text-[#8c9078] px-4 py-2">
@@ -173,9 +232,9 @@ const App: React.FC = () => {
 
       <div className="max-w-7xl mx-auto px-6 mb-10 flex flex-col md:flex-row gap-6 justify-between items-center">
         <div className="relative w-full md:max-w-xs clay-inset px-5 py-4">
-          <input 
-            type="text" 
-            placeholder={t.search} 
+          <input
+            type="text"
+            placeholder={t.search}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full bg-transparent text-[#3f4238] focus:outline-none placeholder:opacity-50 text-sm tracking-wide"
@@ -183,20 +242,19 @@ const App: React.FC = () => {
         </div>
         <div className="flex flex-wrap justify-center gap-3">
           {['All', ...Object.values(Category)].map(cat => (
-            <button 
-              key={cat} 
-              onClick={() => setActiveCategory(cat as any)} 
-              className={`px-5 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-300 clay-chip flex items-center gap-2 ${
-                activeCategory === cat ? 'bg-[#3f4238] text-white border-[#3f4238]' : 'text-[#5a5d50] hover:text-[#3f4238]'
-              }`}
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat as any)}
+              className={`px-5 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-300 clay-chip flex items-center gap-2 ${activeCategory === cat ? 'bg-[#3f4238] text-white border-[#3f4238]' : 'text-[#5a5d50] hover:text-[#3f4238]'
+                }`}
             >
               <span className="opacity-80">{categoryIcons[cat]}</span>
               <span>{cat === 'All' ? t.all : t[cat as Category]}</span>
             </button>
           ))}
         </div>
-        <button 
-          onClick={() => setIsAddModalOpen(true)} 
+        <button
+          onClick={() => setIsAddModalOpen(true)}
           className="px-10 py-4 text-white text-[11px] uppercase font-bold tracking-[0.25em] clay-press hover:brightness-110 transition-all active:scale-95"
         >
           {t.addRecipe}
@@ -205,13 +263,13 @@ const App: React.FC = () => {
 
       <main className="max-w-7xl mx-auto px-6 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-8">
         {filteredRecipes.map(r => (
-          <RecipeCard 
-            key={r.id} 
-            recipe={r} 
-            lang={lang} 
-            onClick={setSelectedRecipe} 
-            onEdit={setEditingRecipe} 
-            onDelete={handleDeleteRecipe} 
+          <RecipeCard
+            key={r.id}
+            recipe={r}
+            lang={lang}
+            onClick={setSelectedRecipe}
+            onEdit={setEditingRecipe}
+            onDelete={handleDeleteRecipe}
           />
         ))}
         {filteredRecipes.length === 0 && (
@@ -221,29 +279,29 @@ const App: React.FC = () => {
         )}
       </main>
 
-        {selectedRecipe && (
-        <RecipeDetail 
-          recipe={selectedRecipe} 
-          lang={lang} 
-          onClose={() => setSelectedRecipe(null)} 
-          onEdit={setEditingRecipe} 
-          onDelete={handleDeleteRecipe} 
+      {selectedRecipe && (
+        <RecipeDetail
+          recipe={selectedRecipe}
+          lang={lang}
+          onClose={() => setSelectedRecipe(null)}
+          onEdit={setEditingRecipe}
+          onDelete={handleDeleteRecipe}
           onUpdate={handleUpdateRecipe}
         />
       )}
       {isAddModalOpen && (
-        <AddRecipeModal 
-          lang={lang} 
-          onClose={() => setIsAddModalOpen(false)} 
-          onAdd={handleAddRecipe} 
+        <AddRecipeModal
+          lang={lang}
+          onClose={() => setIsAddModalOpen(false)}
+          onAdd={handleAddRecipe}
         />
       )}
       {editingRecipe && (
-        <EditRecipeModal 
-          recipe={editingRecipe} 
-          lang={lang} 
-          onClose={() => setEditingRecipe(null)} 
-          onSave={handleUpdateRecipe} 
+        <EditRecipeModal
+          recipe={editingRecipe}
+          lang={lang}
+          onClose={() => setEditingRecipe(null)}
+          onSave={handleUpdateRecipe}
         />
       )}
 
