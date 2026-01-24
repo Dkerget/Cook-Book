@@ -20,11 +20,20 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, lang, onClick, o
     >
       <div className="p-3">
         <div className="aspect-[4/3] overflow-hidden relative clay-inset">
-        <img 
-          src={recipe.thumbnail} 
-          alt={recipe.title} 
-          className="w-full h-full object-cover grayscale-[0.1] transition-transform duration-1000 group-hover:scale-110 rounded-[16px]"
-        />
+        {recipe.thumbnailUrl?.trim() ? (
+          <img 
+            src={recipe.thumbnailUrl} 
+            alt={recipe.title} 
+            className="w-full h-full object-cover grayscale-[0.1] transition-transform duration-1000 group-hover:scale-110 rounded-[16px]"
+          />
+        ) : (
+          <img
+            src="/recipe-images/placeholder.jpg"
+            alt="No thumbnail"
+            className="w-full h-full object-cover grayscale-[0.1] rounded-[16px]"
+            loading="lazy"
+          />
+        )}
           <div className="absolute inset-0 bg-[#3f4238]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
         </div>
       </div>

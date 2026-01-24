@@ -12,14 +12,24 @@ interface EditRecipeModalProps {
 export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({ recipe, lang, onClose, onSave }) => {
   const t = translations[lang];
   const [formData, setFormData] = useState<Recipe>({ ...recipe });
+  const [thumbnailName, setThumbnailName] = useState<string>(recipe.thumbnailUrl ?? "");
 
   const handleSubmit = (e?: React.SyntheticEvent) => {
     e?.preventDefault();
     onSave({
       ...formData,
       ingredients: formData.ingredients.filter(i => i.trim()),
-      instructions: formData.instructions.filter(i => i.trim())
+      instructions: formData.instructions.filter(i => i.trim()),
+      thumbnailUrl: normalizeThumbnailUrl(thumbnailName),
     });
+  };
+
+  const normalizeThumbnailUrl = (value: string) => {
+    const raw = value.trim();
+    if (!raw) return "";
+    if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
+    const cleaned = raw.replace(/^\/?recipe-images\//, "").replace(/^\/+/, "");
+    return cleaned ? `/recipe-images/${cleaned}` : "";
   };
 
   const handleListChange = (
@@ -85,6 +95,19 @@ export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({ recipe, lang, 
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
                 </div>
               </div>
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#a5a58d] mb-2">Thumbnail file name</label>
+              <input
+                type="text"
+                placeholder="e.g. pasta.jpg"
+                value={thumbnailName}
+                onChange={(e) => setThumbnailName(e.target.value)}
+                className="w-full clay-inset p-4 text-sm focus:outline-none transition-all"
+              />
+              <p className="mt-2 text-[10px] text-[#a5a58d]">
+                Stored as <span className="font-semibold">/recipe-images/filename</span>
+              </p>
             </div>
           </div>
 

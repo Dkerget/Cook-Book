@@ -43,3 +43,11 @@ service cloud.firestore {
   }
 }
 ```
+
+## Recipe Thumbnails (Free)
+
+- Put images in: `public/recipe-images/`
+- Default placeholder: `/recipe-images/placeholder.jpg`
+- Use thumbnailUrl like: `/recipe-images/pasta.jpg`
+- Verify in browser: `https://cook.kerget.com/recipe-images/pasta.jpg`
+- Note: Firebase Storage is not used to keep the project free.

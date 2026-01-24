@@ -8,7 +8,7 @@ import {
 import { auth } from "./src/lib/firebase";
 import { Category, Recipe, NewRecipeInput } from './types.ts';
 import {
-  addRecipe,
+  createRecipe,
   deleteRecipe,
   listenRecipes,
   updateRecipe,
@@ -29,6 +29,7 @@ const App: React.FC = () => {
   const [loginPassword, setLoginPassword] = useState("");
   const [authError, setAuthError] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
+  const [recipeError, setRecipeError] = useState("");
   useEffect(() => {
     return onAuthStateChanged(auth, setUser);
   }, []);
@@ -108,12 +109,16 @@ const App: React.FC = () => {
   };
 
   const handleAddRecipe = async (input: NewRecipeInput) => {
-    const newRecipe = {
-      ...input,
-      thumbnail: input.thumbnail || `https://picsum.photos/seed/${Date.now()}/800/800`,
-    };
-    await addRecipe(newRecipe);
-    setIsAddModalOpen(false);
+    setRecipeError("");
+    try {
+      await createRecipe({
+        ...input,
+        thumbnailUrl: input.thumbnailUrl ?? "",
+      });
+      setIsAddModalOpen(false);
+    } catch (error) {
+      setRecipeError("Failed to save recipe.");
+    }
   };
 
   const handleUpdateRecipe = async (updated: Recipe) => {
@@ -129,6 +134,7 @@ const App: React.FC = () => {
       if (selectedRecipe?.id === id) setSelectedRecipe(null);
     }
   };
+
 
   const getAuthErrorMessage = (error: any) => {
     const code = typeof error?.code === "string" ? error.code : "";
@@ -243,6 +249,9 @@ const App: React.FC = () => {
         {authError && (
           <p style={{ marginTop: 12, color: "#8b2c2c" }}>{authError}</p>
         )}
+        {recipeError && (
+          <p style={{ marginTop: 12, color: "#8b2c2c" }}>{recipeError}</p>
+        )}
       </div>
     );
   }
@@ -289,13 +298,13 @@ const App: React.FC = () => {
                     if (Array.isArray(json)) {
                       json.forEach((item) => {
                         if (!item?.title) return;
-                        addRecipe({
+                        createRecipe({
                           title: item.title,
                           url: item.url ?? "",
                           category: item.category ?? Category.Breakfast,
                           ingredients: Array.isArray(item.ingredients) ? item.ingredients : [],
                           instructions: Array.isArray(item.instructions) ? item.instructions : [],
-                          thumbnail: item.thumbnail ?? "",
+                          thumbnailUrl: item.thumbnailUrl ?? "",
                         });
                       });
                       alert(t.importSuccess);
@@ -330,6 +339,14 @@ const App: React.FC = () => {
           </p>
         </div>
       </header>
+
+      {recipeError && (
+        <div className="max-w-3xl mx-auto px-6 mb-6">
+          <div className="clay-surface px-5 py-3 text-sm text-[#8b2c2c]">
+            {recipeError}
+          </div>
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto px-6 mb-10 flex flex-col md:flex-row gap-6 justify-between items-center">
         <div className="relative w-full md:max-w-xs clay-inset px-5 py-4">
@@ -387,7 +404,6 @@ const App: React.FC = () => {
           onClose={() => setSelectedRecipe(null)}
           onEdit={setEditingRecipe}
           onDelete={handleDeleteRecipe}
-          onUpdate={handleUpdateRecipe}
         />
       )}
       {isAddModalOpen && (

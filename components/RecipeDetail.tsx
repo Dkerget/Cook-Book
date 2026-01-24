@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { Recipe } from '../types.ts';
 import { translations } from '../constants.ts';
 
@@ -8,12 +8,10 @@ interface RecipeDetailProps {
   onClose: () => void;
   onEdit: (recipe: Recipe) => void;
   onDelete: (id: string) => void;
-  onUpdate: (recipe: Recipe) => void;
 }
 
-export const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, lang, onClose, onEdit, onDelete, onUpdate }) => {
+export const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, lang, onClose, onEdit, onDelete }) => {
   const t = translations[lang];
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleShare = async () => {
     try {
@@ -22,16 +20,6 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, lang, onClos
     } catch (err) {
       console.error("Failed to copy link:", err);
     }
-  };
-
-  const handleImageChange = (file?: File) => {
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const updated = { ...recipe, thumbnail: reader.result as string };
-      onUpdate(updated);
-    };
-    reader.readAsDataURL(file);
   };
 
   return (
@@ -50,11 +38,20 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, lang, onClos
 
         <div className="w-full md:w-[45%] h-72 md:h-auto relative overflow-hidden shrink-0 p-6">
           <div className="clay-inset relative h-full w-full overflow-hidden">
-            <img 
-              src={recipe.thumbnail} 
-              alt={recipe.title} 
-              className="w-full h-full object-cover scale-105"
-            />
+            {recipe.thumbnailUrl?.trim() ? (
+              <img 
+                src={recipe.thumbnailUrl} 
+                alt={recipe.title} 
+                className="w-full h-full object-cover scale-105"
+              />
+            ) : (
+              <img
+                src="/recipe-images/placeholder.jpg"
+                alt="No thumbnail"
+                className="w-full h-full object-cover scale-105"
+                loading="lazy"
+              />
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-[#3f4238]/20 via-transparent to-transparent"></div>
           </div>
         </div>
@@ -88,13 +85,6 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, lang, onClos
                 <span>{t.edit}</span>
               </button>
               <button 
-                onClick={() => fileInputRef.current?.click()}
-                className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#3f4238] hover:text-[#a5a58d] transition-colors flex items-center gap-2"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7h4l2-3h6l2 3h4v12H3V7zm9 3a4 4 0 100 8 4 4 0 000-8z" /></svg>
-                <span>{t.replaceImage}</span>
-              </button>
-              <button 
                 onClick={handleShare}
                 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#3f4238] hover:text-[#a5a58d] transition-colors flex items-center gap-2"
               >
@@ -108,13 +98,6 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, lang, onClos
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                 <span>{t.delete}</span>
               </button>
-              <input 
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => handleImageChange(e.target.files?.[0])}
-              />
             </div>
 
             <section className="mb-12">

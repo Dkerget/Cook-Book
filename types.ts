@@ -13,7 +13,7 @@ export interface Recipe {
   category: Category;
   ingredients: string[];
   instructions: string[];
-  thumbnail: string;
+  thumbnailUrl?: string;
   createdAt: number;
 }
 
@@ -23,5 +23,5 @@ export interface NewRecipeInput {
   category: Category;
   ingredients: string[];
   instructions: string[];
-  thumbnail: string;
+  thumbnailUrl?: string;
 }

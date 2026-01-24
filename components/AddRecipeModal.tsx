@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Category, NewRecipeInput } from '../types.ts';
 import { translations } from '../constants.ts';
 
@@ -11,9 +11,9 @@ interface AddRecipeModalProps {
 export const AddRecipeModal: React.FC<AddRecipeModalProps> = ({ onClose, lang, onAdd }) => {
   const t = translations[lang];
   const [formData, setFormData] = useState<NewRecipeInput>({
-    title: '', url: '', category: Category.Breakfast, ingredients: [''], instructions: [''], thumbnail: ''
+    title: '', url: '', category: Category.Breakfast, ingredients: [''], instructions: ['']
   });
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [thumbnailName, setThumbnailName] = useState<string>("");
 
   const handleSubmit = (e?: React.SyntheticEvent) => {
     e?.preventDefault();
@@ -21,9 +21,18 @@ export const AddRecipeModal: React.FC<AddRecipeModalProps> = ({ onClose, lang, o
       onAdd({
         ...formData,
         ingredients: formData.ingredients.filter(i => i.trim()),
-        instructions: formData.instructions.filter(i => i.trim())
+        instructions: formData.instructions.filter(i => i.trim()),
+        thumbnailUrl: normalizeThumbnailUrl(thumbnailName),
       });
     }
+  };
+
+  const normalizeThumbnailUrl = (value: string) => {
+    const raw = value.trim();
+    if (!raw) return "";
+    if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
+    const cleaned = raw.replace(/^\/?recipe-images\//, "").replace(/^\/+/, "");
+    return cleaned ? `/recipe-images/${cleaned}` : "";
   };
 
   return (
@@ -51,23 +60,20 @@ export const AddRecipeModal: React.FC<AddRecipeModalProps> = ({ onClose, lang, o
                 <input type="url" placeholder={t.sourceUrl} value={formData.url} onChange={e => setFormData({...formData, url: e.target.value})} className="w-full p-4 text-sm clay-inset focus:outline-none" />
               </div>
             </div>
-            <div className="clay-inset flex flex-col items-center justify-center p-6 cursor-pointer min-h-[220px] hover:brightness-105 transition-colors group" onClick={() => fileInputRef.current?.click()}>
-              {formData.thumbnail ? (
-                <img src={formData.thumbnail} className="max-h-full object-contain" alt="Preview" />
-              ) : (
-                <div className="text-center">
-                  <svg className="w-8 h-8 text-[#a5a58d] mx-auto mb-3 opacity-40 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
-                  <span className="text-[10px] font-bold text-[#a5a58d] uppercase tracking-[0.2em]">{t.uploadPhoto}</span>
-                </div>
-              )}
-              <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={e => {
-                const f = e.target.files?.[0];
-                if (f) {
-                  const r = new FileReader();
-                  r.onloadend = () => setFormData({...formData, thumbnail: r.result as string});
-                  r.readAsDataURL(f);
-                }
-              }} />
+            <div className="clay-inset flex flex-col items-center justify-center p-6 min-h-[220px]">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-[#a5a58d] mb-3 block">
+                Thumbnail file name
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. pasta.jpg"
+                value={thumbnailName}
+                onChange={(e) => setThumbnailName(e.target.value)}
+                className="w-full p-4 text-sm clay-inset focus:outline-none"
+              />
+              <p className="mt-3 text-[10px] text-[#a5a58d] text-center">
+                Stored as <span className="font-semibold">/recipe-images/filename</span>
+              </p>
             </div>
           </div>
           

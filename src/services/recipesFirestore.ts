@@ -33,7 +33,7 @@ const toRecipe = (id: string, data: any): Recipe => {
     category: isCategory(data?.category) ? data.category : Category.Breakfast,
     ingredients: Array.isArray(data?.ingredients) ? data.ingredients : [],
     instructions: Array.isArray(data?.instructions) ? data.instructions : [],
-    thumbnail: data?.thumbnail ?? "",
+    thumbnailUrl: data?.thumbnailUrl ?? "",
     createdAt: toMillis(data?.createdAt ?? data?.updatedAt),
   };
 };
@@ -46,17 +46,19 @@ export function listenRecipes(callback: (recipes: Recipe[]) => void) {
   });
 }
 
-export function addRecipe(recipe: NewRecipeInput) {
+export async function createRecipe(recipe: NewRecipeInput) {
   const ownerEmail = auth.currentUser?.email ?? "";
-  return addDoc(recipesCollection, {
+  const docRef = await addDoc(recipesCollection, {
     ...recipe,
     ownerEmail,
+    thumbnailUrl: recipe.thumbnailUrl ?? "",
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
+  return docRef.id;
 }
 
-export function updateRecipe(id: string, patch: Partial<NewRecipeInput>) {
+export function updateRecipe(id: string, patch: Partial<NewRecipeInput & { thumbnailUrl?: string }>) {
   const ref = doc(db, "recipes", id);
   return updateDoc(ref, {
     ...patch,

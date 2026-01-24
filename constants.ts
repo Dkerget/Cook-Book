@@ -91,7 +91,7 @@ export const INITIAL_RECIPES: Recipe[] = [
     category: Category.Breakfast,
     ingredients: ['1 tsp ceremonial matcha', '1/2 cup hot water', '1 tbsp honey', 'Greek yogurt', 'Blackberries'],
     instructions: ['Whisk matcha with water until frothy.', 'Layer yogurt in bowl.', 'Drizzle matcha over yogurt.', 'Top with berries.'],
-    thumbnail: 'https://images.unsplash.com/photo-1515823064-d6e0c04616a7?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1515823064-d6e0c04616a7?auto=format&fit=crop&w=800&q=80',
     createdAt: Date.now()
   }
 ];
