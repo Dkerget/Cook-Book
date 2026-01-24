@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Category, NewRecipeInput } from '../types.ts';
 import { translations } from '../constants.ts';
+import { THUMBNAILS } from '../data/thumbnails.ts';
 
 interface AddRecipeModalProps {
   onClose: () => void;
@@ -30,9 +31,7 @@ export const AddRecipeModal: React.FC<AddRecipeModalProps> = ({ onClose, lang, o
   const normalizeThumbnailUrl = (value: string) => {
     const raw = value.trim();
     if (!raw) return "";
-    if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
-    const cleaned = raw.replace(/^\/?recipe-images\//, "").replace(/^\/+/, "");
-    return cleaned ? `/recipe-images/${cleaned}` : "";
+    return `/recipe-images/${raw}`;
   };
 
   return (
@@ -62,15 +61,28 @@ export const AddRecipeModal: React.FC<AddRecipeModalProps> = ({ onClose, lang, o
             </div>
             <div className="clay-inset flex flex-col items-center justify-center p-6 min-h-[220px]">
               <label className="text-[10px] font-bold uppercase tracking-widest text-[#a5a58d] mb-3 block">
-                Thumbnail file name
+                Thumbnail
               </label>
-              <input
-                type="text"
-                placeholder="e.g. pasta.jpg"
+              <select
                 value={thumbnailName}
                 onChange={(e) => setThumbnailName(e.target.value)}
-                className="w-full p-4 text-sm clay-inset focus:outline-none"
-              />
+                className="w-full p-4 text-sm clay-inset focus:outline-none appearance-none"
+              >
+                <option value="">(none)</option>
+                {THUMBNAILS.map((file) => (
+                  <option key={file} value={file}>
+                    {file}
+                  </option>
+                ))}
+              </select>
+              <div className="mt-4 w-full">
+                <img
+                  src={normalizeThumbnailUrl(thumbnailName) || "/recipe-images/placeholder.jpg"}
+                  alt="Thumbnail preview"
+                  className="w-full h-36 object-cover rounded-[16px]"
+                  loading="lazy"
+                />
+              </div>
               <p className="mt-3 text-[10px] text-[#a5a58d] text-center">
                 Stored as <span className="font-semibold">/recipe-images/filename</span>
               </p>

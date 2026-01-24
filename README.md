@@ -48,6 +48,7 @@ service cloud.firestore {
 
 - Put images in: `public/recipe-images/`
 - Default placeholder: `/recipe-images/placeholder.jpg`
+- Update the dropdown list in `src/data/thumbnails.ts` with new filenames
 - Use thumbnailUrl like: `/recipe-images/pasta.jpg`
 - Verify in browser: `https://cook.kerget.com/recipe-images/pasta.jpg`
 - Note: Firebase Storage is not used to keep the project free.

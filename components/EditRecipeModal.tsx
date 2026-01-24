@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Category, Recipe } from '../types.ts';
 import { translations } from '../constants.ts';
+import { THUMBNAILS } from '../data/thumbnails.ts';
 
 interface EditRecipeModalProps {
   recipe: Recipe;
@@ -12,7 +13,7 @@ interface EditRecipeModalProps {
 export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({ recipe, lang, onClose, onSave }) => {
   const t = translations[lang];
   const [formData, setFormData] = useState<Recipe>({ ...recipe });
-  const [thumbnailName, setThumbnailName] = useState<string>(recipe.thumbnailUrl ?? "");
+  const [thumbnailName, setThumbnailName] = useState<string>(recipe.thumbnailUrl?.replace(/^\/?recipe-images\//, "") ?? "");
 
   const handleSubmit = (e?: React.SyntheticEvent) => {
     e?.preventDefault();
@@ -27,9 +28,7 @@ export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({ recipe, lang, 
   const normalizeThumbnailUrl = (value: string) => {
     const raw = value.trim();
     if (!raw) return "";
-    if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
-    const cleaned = raw.replace(/^\/?recipe-images\//, "").replace(/^\/+/, "");
-    return cleaned ? `/recipe-images/${cleaned}` : "";
+    return `/recipe-images/${raw}`;
   };
 
   const handleListChange = (
@@ -97,14 +96,27 @@ export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({ recipe, lang, 
               </div>
             </div>
             <div className="md:col-span-2">
-              <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#a5a58d] mb-2">Thumbnail file name</label>
-              <input
-                type="text"
-                placeholder="e.g. pasta.jpg"
+              <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#a5a58d] mb-2">Thumbnail</label>
+              <select
                 value={thumbnailName}
                 onChange={(e) => setThumbnailName(e.target.value)}
-                className="w-full clay-inset p-4 text-sm focus:outline-none transition-all"
-              />
+                className="w-full clay-inset p-4 text-sm focus:outline-none transition-all appearance-none"
+              >
+                <option value="">(none)</option>
+                {THUMBNAILS.map((file) => (
+                  <option key={file} value={file}>
+                    {file}
+                  </option>
+                ))}
+              </select>
+              <div className="mt-3">
+                <img
+                  src={normalizeThumbnailUrl(thumbnailName) || "/recipe-images/placeholder.jpg"}
+                  alt="Thumbnail preview"
+                  className="w-full h-40 object-cover rounded-[16px]"
+                  loading="lazy"
+                />
+              </div>
               <p className="mt-2 text-[10px] text-[#a5a58d]">
                 Stored as <span className="font-semibold">/recipe-images/filename</span>
               </p>
