@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { User } from "firebase/auth";
+import { onAuthStateChanged, User } from "firebase/auth";
 import {
-  sendLoginLink,
-  completeLoginIfLink,
-  watchAuth,
-} from "./src/auth/emailLink";
+  signInWithEmailPassword,
+  signOutUser,
+  signUpWithEmailPassword,
+} from "./src/auth/auth";
+import { auth } from "./src/lib/firebase";
 import { Category, Recipe, NewRecipeInput } from './types.ts';
 import { RecipeCard } from './components/RecipeCard.tsx';
 import { RecipeDetail } from './components/RecipeDetail.tsx';
@@ -18,10 +19,11 @@ const LANG_KEY = 'wellness_cookbook_lang';
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loginEmail, setLoginEmail] = useState("");
-  const [linkSent, setLinkSent] = useState(false);
+  const [loginPassword, setLoginPassword] = useState("");
+  const [authError, setAuthError] = useState("");
+  const [authLoading, setAuthLoading] = useState(false);
   useEffect(() => {
-    completeLoginIfLink();
-    return watchAuth(setUser);
+    return onAuthStateChanged(auth, setUser);
   }, []);
 
   const [lang, setLang] = useState<'en' | 'ru'>(() => {
@@ -120,6 +122,22 @@ const App: React.FC = () => {
     }
   };
 
+  const getAuthErrorMessage = (error: any) => {
+    const code = typeof error?.code === "string" ? error.code : "";
+    switch (code) {
+      case "auth/user-not-found":
+        return "No account found. Create one?";
+      case "auth/wrong-password":
+        return "Incorrect password.";
+      case "auth/email-already-in-use":
+        return "Account already exists. Sign in instead.";
+      case "auth/weak-password":
+        return "Password must be at least 6 characters.";
+      default:
+        return code || error?.message || "Something went wrong.";
+    }
+  };
+
   if (!user) {
     return (
       <div style={{ padding: 24, maxWidth: 420 }}>
@@ -131,6 +149,23 @@ const App: React.FC = () => {
           value={loginEmail}
           onChange={(e) => setLoginEmail(e.target.value)}
           style={{
+            width: "100%",
+            padding: 12,
+            fontSize: 16,
+            background: "#ededed",
+            border: "1px solid #d2d2d2",
+            color: "#3f4238",
+            borderRadius: 12
+          }}
+        />
+
+        <input
+          type="password"
+          placeholder="password"
+          value={loginPassword}
+          onChange={(e) => setLoginPassword(e.target.value)}
+          style={{
+            marginTop: 12,
             width: "100%",
             padding: 12,
             fontSize: 16,
@@ -154,14 +189,52 @@ const App: React.FC = () => {
             letterSpacing: "0.08em"
           }}
           onClick={async () => {
-            await sendLoginLink(loginEmail);
-            setLinkSent(true);
+            setAuthLoading(true);
+            setAuthError("");
+            try {
+              await signInWithEmailPassword(loginEmail, loginPassword);
+            } catch (error) {
+              setAuthError(getAuthErrorMessage(error));
+            } finally {
+              setAuthLoading(false);
+            }
           }}
+          disabled={authLoading}
         >
-          Send login link
+          {authLoading ? "Signing in..." : "Sign In"}
         </button>
 
-        {linkSent && <p>Check your email to finish signing in.</p>}
+        <button
+          style={{
+            marginTop: 10,
+            padding: 12,
+            width: "100%",
+            background: "transparent",
+            color: "#3f4238",
+            border: "1px solid #2f312b",
+            borderRadius: 999,
+            fontWeight: 600,
+            letterSpacing: "0.08em"
+          }}
+          onClick={async () => {
+            setAuthLoading(true);
+            setAuthError("");
+            try {
+              await signUpWithEmailPassword(loginEmail, loginPassword);
+            } catch (error) {
+              setAuthError(getAuthErrorMessage(error));
+            } finally {
+              setAuthLoading(false);
+            }
+          }}
+          disabled={authLoading}
+        >
+          {authLoading ? "Creating..." : "Create Account"}
+        </button>
+
+        {authError && (
+          <p style={{ marginTop: 12, color: "#8b2c2c" }}>{authError}</p>
+        )}
       </div>
     );
   }
@@ -218,6 +291,12 @@ const App: React.FC = () => {
           <span className="opacity-20">|</span>
           <button onClick={() => setLang('ru')} className={lang === 'ru' ? 'text-[#3f4238]' : ''}>RU</button>
         </div>
+        <button
+          className="clay-chip text-[10px] font-bold text-[#8c9078] px-4 py-2 hover:text-[#3f4238] transition-colors"
+          onClick={() => signOutUser()}
+        >
+          Sign Out
+        </button>
       </div>
 
       <header className="pt-14 md:pt-16 pb-8 text-center mb-6 px-4">
