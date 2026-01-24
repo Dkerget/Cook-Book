@@ -79,9 +79,24 @@ export const AddRecipeModal: React.FC<AddRecipeModalProps> = ({ onClose, lang, o
               </div>
               <div className="space-y-3 clay-inset px-4 py-4">
                 {formData.ingredients.map((ing, i) => (
-                  <input key={i} value={ing} placeholder={t.placeholderIng} onChange={e => {
-                    const n = [...formData.ingredients]; n[i] = e.target.value; setFormData({...formData, ingredients: n});
-                  }} className="w-full p-3 text-sm clay-inset focus:outline-none" />
+                  <div key={i} className="flex gap-3 items-center group">
+                    <input value={ing} placeholder={t.placeholderIng} onChange={e => {
+                      const n = [...formData.ingredients]; n[i] = e.target.value; setFormData({...formData, ingredients: n});
+                    }} className="flex-1 p-3 text-sm clay-inset focus:outline-none" />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const n = formData.ingredients.filter((_, idx) => idx !== i);
+                        setFormData({ ...formData, ingredients: n.length ? n : [''] });
+                      }}
+                      className="text-red-300 hover:text-red-500 transition-colors p-2 opacity-100 md:opacity-0 md:group-hover:opacity-100"
+                      aria-label="Remove ingredient"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
                 ))}
               </div>
             </div>
@@ -93,11 +108,24 @@ export const AddRecipeModal: React.FC<AddRecipeModalProps> = ({ onClose, lang, o
               </div>
               <div className="space-y-4 clay-inset px-4 py-4">
                 {formData.instructions.map((step, i) => (
-                  <div key={i} className="flex gap-4 items-start">
+                  <div key={i} className="flex gap-4 items-start group">
                     <span className="serif text-[#a5a58d] pt-3 w-4 shrink-0 text-sm italic">{i + 1}</span>
                     <textarea value={step} placeholder={t.placeholderStep} onChange={e => {
                       const n = [...formData.instructions]; n[i] = e.target.value; setFormData({...formData, instructions: n});
-                    }} className="w-full p-3 text-sm clay-inset focus:outline-none min-h-[80px]" />
+                    }} className="flex-1 p-3 text-sm clay-inset focus:outline-none min-h-[80px]" />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const n = formData.instructions.filter((_, idx) => idx !== i);
+                        setFormData({ ...formData, instructions: n.length ? n : [''] });
+                      }}
+                      className="text-red-300 hover:text-red-500 transition-colors p-2 mt-2 opacity-100 md:opacity-0 md:group-hover:opacity-100"
+                      aria-label="Remove instruction"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
                   </div>
                 ))}
               </div>
