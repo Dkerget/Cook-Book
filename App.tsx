@@ -203,7 +203,7 @@ const App: React.FC = () => {
         </button>
       </div>
 
-      <main className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+      <main className="max-w-7xl mx-auto px-6 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-8">
         {filteredRecipes.map(r => (
           <RecipeCard 
             key={r.id} 
