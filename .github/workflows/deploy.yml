@@ -1,8 +1,6 @@
 name: Deploy to GitHub Pages
 
-on:
-  push:
-    branches: [main]
+on: []
 
 permissions:
   contents: read
@@ -21,6 +19,10 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Build
+        env:
+           VITE_FB_API_KEY: ${{ vars.VITE_FB_API_KEY }}
+           VITE_FB_AUTH_DOMAIN: ${{ vars.VITE_FB_AUTH_DOMAIN }}
+           VITE_FB_PROJECT_ID: ${{ vars.VITE_FB_PROJECT_ID }}
         run: npm run build
       - name: Setup Pages
         uses: actions/configure-pages@v4
