@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Category, Recipe } from '../types.ts';
 import { translations } from '../constants.ts';
-import { THUMBNAILS } from '../data/thumbnails.ts';
+import { THUMBNAILS } from '../src/data/thumbnails.ts';
 
 interface EditRecipeModalProps {
   recipe: Recipe;
