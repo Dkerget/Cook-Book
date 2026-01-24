@@ -7,14 +7,21 @@ import {
 } from "./src/auth/auth";
 import { auth } from "./src/lib/firebase";
 import { Category, Recipe, NewRecipeInput } from './types.ts';
+import {
+  addRecipe,
+  deleteRecipe,
+  listenRecipes,
+  updateRecipe,
+} from "./src/services/recipesFirestore";
 import { RecipeCard } from './components/RecipeCard.tsx';
 import { RecipeDetail } from './components/RecipeDetail.tsx';
 import { AddRecipeModal } from './components/AddRecipeModal.tsx';
 import { EditRecipeModal } from './components/EditRecipeModal.tsx';
-import { translations, INITIAL_RECIPES } from './constants.ts';
+import { translations } from './constants.ts';
 
-const STORAGE_KEY = 'wellness_cookbook_data_v2';
 const LANG_KEY = 'wellness_cookbook_lang';
+
+console.log("COOKBOOK BUILD", "2026-01-24-01");
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -33,12 +40,7 @@ const App: React.FC = () => {
     } catch { return 'en'; }
   });
 
-  const [recipes, setRecipes] = useState<Recipe[]>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : INITIAL_RECIPES;
-    } catch { return INITIAL_RECIPES; }
-  });
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<Category | 'All'>('All');
@@ -50,7 +52,14 @@ const App: React.FC = () => {
   const t = translations[lang];
 
   useEffect(() => { localStorage.setItem(LANG_KEY, lang); }, [lang]);
-  useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(recipes)); }, [recipes]);
+  useEffect(() => {
+    if (!user) {
+      setRecipes([]);
+      return;
+    }
+    const unsubscribe = listenRecipes(setRecipes);
+    return () => unsubscribe();
+  }, [user]);
 
   const filteredRecipes = useMemo(() => {
     let result = recipes.filter(r => activeCategory === 'All' || r.category === activeCategory);
@@ -98,26 +107,25 @@ const App: React.FC = () => {
     )
   };
 
-  const handleAddRecipe = (input: NewRecipeInput) => {
-    const newRecipe: Recipe = {
+  const handleAddRecipe = async (input: NewRecipeInput) => {
+    const newRecipe = {
       ...input,
-      id: Math.random().toString(36).substr(2, 9),
-      createdAt: Date.now(),
-      thumbnail: input.thumbnail || `https://picsum.photos/seed/${Date.now()}/800/800`
+      thumbnail: input.thumbnail || `https://picsum.photos/seed/${Date.now()}/800/800`,
     };
-    setRecipes(prev => [newRecipe, ...prev]);
+    await addRecipe(newRecipe);
     setIsAddModalOpen(false);
   };
 
-  const handleUpdateRecipe = (updated: Recipe) => {
-    setRecipes(prev => prev.map(r => r.id === updated.id ? updated : r));
+  const handleUpdateRecipe = async (updated: Recipe) => {
+    const { id, createdAt, ...patch } = updated;
+    await updateRecipe(id, patch);
     setEditingRecipe(null);
     if (selectedRecipe?.id === updated.id) setSelectedRecipe(updated);
   };
 
-  const handleDeleteRecipe = (id: string) => {
+  const handleDeleteRecipe = async (id: string) => {
     if (window.confirm('Delete this recipe?')) {
-      setRecipes(prev => prev.filter(r => r.id !== id));
+      await deleteRecipe(id);
       if (selectedRecipe?.id === id) setSelectedRecipe(null);
     }
   };
@@ -278,7 +286,20 @@ const App: React.FC = () => {
                 reader.onload = (ev) => {
                   try {
                     const json = JSON.parse(ev.target?.result as string);
-                    if (Array.isArray(json)) setRecipes(json);
+                    if (Array.isArray(json)) {
+                      json.forEach((item) => {
+                        if (!item?.title) return;
+                        addRecipe({
+                          title: item.title,
+                          url: item.url ?? "",
+                          category: item.category ?? Category.Breakfast,
+                          ingredients: Array.isArray(item.ingredients) ? item.ingredients : [],
+                          instructions: Array.isArray(item.instructions) ? item.instructions : [],
+                          thumbnail: item.thumbnail ?? "",
+                        });
+                      });
+                      alert(t.importSuccess);
+                    }
                   } catch { alert(t.importError); }
                 };
                 reader.readAsText(file);

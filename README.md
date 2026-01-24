@@ -23,3 +23,23 @@ View your app in AI Studio: https://ai.studio/apps/drive/1Z3g59eJXFYvCoVHeAXn9sL
 
 - Firebase Console → Authentication → Sign-in method → enable **Email/Password**
 - (Optional) disable Email link (passwordless)
+
+## Firestore Rules (Family App)
+
+Expected shared collection path: `/recipes/{id}`
+
+Example allowlist rules (replace with real emails):
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /recipes/{doc} {
+      allow read, write: if request.auth != null
+        && request.auth.token.email in [
+          "dima@example.com",
+          "partner@example.com"
+        ];
+    }
+  }
+}
+```
