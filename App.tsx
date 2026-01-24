@@ -23,51 +23,6 @@ const App: React.FC = () => {
     completeLoginIfLink();
     return watchAuth(setUser);
   }, []);
-  if (!user) {
-    return (
-      <div style={{ padding: 24, maxWidth: 420 }}>
-        <h2>Sign in to Cookbook</h2>
-
-        <input
-          type="email"
-          placeholder="your@email.com"
-          value={loginEmail}
-          onChange={(e) => setLoginEmail(e.target.value)}
-          style={{
-            width: "100%",
-            padding: 12,
-            fontSize: 16,
-            background: "#ededed",
-            border: "1px solid #d2d2d2",
-            color: "#3f4238",
-            borderRadius: 12
-          }}
-        />
-
-        <button
-          style={{
-            marginTop: 14,
-            padding: 12,
-            width: "100%",
-            background: "#3f4238",
-            color: "#f5f5f5",
-            border: "1px solid #2f312b",
-            borderRadius: 999,
-            fontWeight: 600,
-            letterSpacing: "0.08em"
-          }}
-          onClick={async () => {
-            await sendLoginLink(loginEmail);
-            setLinkSent(true);
-          }}
-        >
-          Send login link
-        </button>
-
-        {linkSent && <p>Check your email to finish signing in.</p>}
-      </div>
-    );
-  }
 
   const [lang, setLang] = useState<'en' | 'ru'>(() => {
     try {
@@ -164,6 +119,52 @@ const App: React.FC = () => {
       if (selectedRecipe?.id === id) setSelectedRecipe(null);
     }
   };
+
+  if (!user) {
+    return (
+      <div style={{ padding: 24, maxWidth: 420 }}>
+        <h2>Sign in to Cookbook</h2>
+
+        <input
+          type="email"
+          placeholder="your@email.com"
+          value={loginEmail}
+          onChange={(e) => setLoginEmail(e.target.value)}
+          style={{
+            width: "100%",
+            padding: 12,
+            fontSize: 16,
+            background: "#ededed",
+            border: "1px solid #d2d2d2",
+            color: "#3f4238",
+            borderRadius: 12
+          }}
+        />
+
+        <button
+          style={{
+            marginTop: 14,
+            padding: 12,
+            width: "100%",
+            background: "#3f4238",
+            color: "#f5f5f5",
+            border: "1px solid #2f312b",
+            borderRadius: 999,
+            fontWeight: 600,
+            letterSpacing: "0.08em"
+          }}
+          onClick={async () => {
+            await sendLoginLink(loginEmail);
+            setLinkSent(true);
+          }}
+        >
+          Send login link
+        </button>
+
+        {linkSent && <p>Check your email to finish signing in.</p>}
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-screen pb-20 selection:bg-[#3f4238] selection:text-white">
