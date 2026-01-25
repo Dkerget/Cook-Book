@@ -96,7 +96,16 @@ export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({ recipe, lang, 
               </div>
             </div>
             <div className="md:col-span-2">
-              <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#a5a58d] mb-2">Thumbnail</label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#a5a58d]">Thumbnail</label>
+                <button
+                  type="button"
+                  onClick={() => setThumbnailName("")}
+                  className="text-[9px] clay-press text-white px-3 py-1.5"
+                >
+                  Remove image
+                </button>
+              </div>
               <select
                 value={thumbnailName}
                 onChange={(e) => setThumbnailName(e.target.value)}
